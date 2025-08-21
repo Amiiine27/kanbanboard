@@ -15,7 +15,10 @@ export default function Column({ title, cardsTab, columnName, onMoveCard }) {
         const cardIndex = parseInt(e.dataTransfer.getData("cardIndex"))
         const sourceColumn = e.dataTransfer.getData("sourceColumn")
 
-        onMoveCard(cardIndex, sourceColumn, columnName)
+        if (sourceColumn!=columnName) {
+          onMoveCard(cardIndex, sourceColumn, columnName)
+        }
+        
       }}
     >
       <h1 className="text-xl font-bold p-4 border-b border-gray-200 text-center">
