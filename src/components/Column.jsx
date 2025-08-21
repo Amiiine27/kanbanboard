@@ -1,6 +1,6 @@
 import Card from "./Card";
 
-export default function Column({ title, cardsTab, columnName, onMoveCard }) {
+export default function Column({ title, cardsTab, columnName, onMoveCard, onUpdateCard }) {
   return (
     <div
       className="w-1/3 bg-white rounded-lg min-h-96"
@@ -32,7 +32,8 @@ export default function Column({ title, cardsTab, columnName, onMoveCard }) {
             description={card.description}
             cardIndex={index} // ← L'index de la carte
             currentColumn={columnName} // ← Le nom de cette colonne
-            onMoveCard={onMoveCard} // ← Nouveau (mais d'où ça vient ?)
+            onMoveCard={onMoveCard}
+            onUpdateCard={onUpdateCard} // ← Nouveau (mais d'où ça vient ?)
           />
         ))}
       </div>

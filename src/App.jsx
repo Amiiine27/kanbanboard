@@ -46,6 +46,20 @@ function App() {
     console.log("Function moveCard Appelée");
   };
 
+  const updateCard = (cardIndex, column, newTitle) =>{
+    const currentCard = kanbanData[column][cardIndex]
+
+    const updatedCard = {
+      task: newTitle,
+      description: currentCard.description
+    }
+
+    const newKanbanData = {...kanbanData}
+    newKanbanData[column][cardIndex] = updatedCard;
+
+    setKanbanData(newKanbanData)
+  }
+
   
   return (
     <>
@@ -56,19 +70,22 @@ function App() {
             title="To Do"
             cardsTab={kanbanData.todo}
             columnName="todo" // ← Le nom technique de la colonne
-            onMoveCard={moveCard} // ← La fonction qu'on a créée
+            onMoveCard={moveCard}
+            onUpdateCard={updateCard} // ← La fonction qu'on a créée
           />
           <Column
             title="In Progress"
             cardsTab={kanbanData.inProgress}
             columnName="inProgress" // ← Le nom technique
-            onMoveCard={moveCard} // ← La même fonction
+            onMoveCard={moveCard}
+            onUpdateCard={updateCard} // ← La même fonction
           />
           <Column
             title="Done"
             cardsTab={kanbanData.done}
             columnName="done" // ← Le nom technique
-            onMoveCard={moveCard} // ← La même fonction
+            onMoveCard={moveCard}
+            onUpdateCard={updateCard} // ← La même fonction
           />
         </div>
       </div>
