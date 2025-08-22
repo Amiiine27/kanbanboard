@@ -1,42 +1,102 @@
+import { useState } from "react";
 import Card from "./Card";
 
-export default function Column({ title, cardsTab, columnName, onMoveCard, onUpdateCard }) {
+export default function Column({
+  title,
+  cardsTab,
+  columnName,
+  onMoveCard,
+  onUpdateCard,
+  onAddCard,
+}) {
+  const [isAdding, setIsAdding] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+
+  const handleAddCard = () => {
+    onAddCard(columnName, newTaskTitle, "");
+    setIsAdding(false);
+    setNewTaskTitle("");
+  };
+
+  const handleCancel = () => {
+    setIsAdding(false);
+    setNewTaskTitle("");
+  };
+
   return (
     <div
-      className="w-1/3 bg-white rounded-lg min-h-96"
+      className="w-96 flex-shrink-0 bg-white rounded-lg flex flex-col"
       onDragOver={(e) => {
-        // Que faire ici pour autoriser le drop ?
-        e.preventDefault()
+        e.preventDefault();
       }}
       onDrop={(e) => {
-        e.preventDefault()
+        e.preventDefault();
+        const cardIndex = parseInt(e.dataTransfer.getData("cardIndex"));
+        const sourceColumn = e.dataTransfer.getData("sourceColumn");
 
-        // Que faire ici pour autoriser le drop ?
-        const cardIndex = parseInt(e.dataTransfer.getData("cardIndex"))
-        const sourceColumn = e.dataTransfer.getData("sourceColumn")
-
-        if (sourceColumn!=columnName) {
-          onMoveCard(cardIndex, sourceColumn, columnName)
+        if (sourceColumn != columnName) {
+          onMoveCard(cardIndex, sourceColumn, columnName);
         }
-        
       }}
     >
       <h1 className="text-xl font-bold p-4 border-b border-gray-200 text-center">
         {title}
       </h1>
-      <div className="gap-5">
+
+      <div className="flex-1 gap-5">
         {cardsTab.map((card, index) => (
           <Card
             key={index}
             task={card.task}
             description={card.description}
-            cardIndex={index} // ← L'index de la carte
-            currentColumn={columnName} // ← Le nom de cette colonne
+            cardIndex={index}
+            currentColumn={columnName}
             onMoveCard={onMoveCard}
-            onUpdateCard={onUpdateCard} // ← Nouveau (mais d'où ça vient ?)
+            onUpdateCard={onUpdateCard}
           />
         ))}
       </div>
+
+      {/* Zone d'ajout - séparée des cartes */}
+
+      {isAdding ? (
+        <div className="bg-gray-50 rounded-lg p-3 border">
+          <input
+            type="text"
+            placeholder="Titre de la tâche..."
+            value={newTaskTitle}
+            onChange={(e) => setNewTaskTitle(e.target.value)}
+            className="w-full p-2 border rounded mb-2"
+            autoFocus
+            onBlur={() => {
+              if (newTaskTitle === "") {
+                handleCancel();
+              } else {
+                handleAddCard();
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                if (newTaskTitle === "") {
+                  handleCancel();
+                } else {
+                  handleAddCard();
+                }
+              }
+              if (e.key === "Escape") {
+                handleCancel();
+              }
+            }}
+          />
+        </div>
+      ) : (
+        <button
+          onClick={() => setIsAdding(true)}
+          className="w-full p-3 border border-gray-300 rounded-lg"
+        >
+          + Ajouter une carte
+        </button>
+      )}
     </div>
   );
 }

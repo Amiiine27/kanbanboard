@@ -4,88 +4,121 @@ import { useState, useEffect } from "react";
 
 function App() {
   const [kanbanData, setKanbanData] = useState({
-    todo: [
-      {
-        task: "Se laver les dents",
-        description:
-          "Se brosser les dents, passer le fil dentaire et le jet dentaire",
-      },
-      { task: "Aller a la salle de sport", description: "Séance pecs triceps" },
-      {
-        task: "Faire les courses",
-        description: "Acheter du pain, du lait, des oeufs",
-      },
-    ],
-    inProgress: [
-      {
-        task: "Apprendre React",
-        description: "Apprendre React pour créer des applications web",
-      },
-    ],
-    done: [],
+    todo: {
+      title: "To Do",
+      cards: [
+        // ← Il faut "cards:" avant le tableau !
+        {
+          task: "Se laver les dents",
+          description:
+            "Se brosser les dents, passer le fil dentaire et le jet dentaire",
+        },
+        {
+          task: "Aller a la salle de sport",
+          description: "Séance pecs triceps",
+        },
+        {
+          task: "Faire les courses",
+          description: "Acheter du pain, du lait, des oeufs",
+        },
+      ],
+    },
+    inProgress: {
+      title: "In Progress",
+      cards: [
+        {
+          task: "Apprendre React",
+          description: "Apprendre React pour créer des applications web",
+        },
+      ],
+    },
+    done: {
+      title: "Done",
+      cards: [],
+    },
   });
 
   const moveCard = (cardIndex, startColumn, endColumn) => {
     // On recupere la carte a déplacer
-    const cardToMove = kanbanData[startColumn][cardIndex];
+    const cardToMove = kanbanData[startColumn].cards[cardIndex];
 
     // On supprime la carte de son emplacement actuel
-    const newStartColumnCards = kanbanData[startColumn].filter(
+    const newStartColumnCards = kanbanData[startColumn].cards.filter(
       (card, index) => index !== cardIndex
     );
 
     // Ajouter la carte à la colonne de destination
-    const newEndColumnCards = [...kanbanData[endColumn], cardToMove];
+    const newEndColumnCards = [...kanbanData[endColumn].cards, cardToMove];
 
     setKanbanData({
       ...kanbanData,
-      [startColumn]: newStartColumnCards,
-      [endColumn]: newEndColumnCards,
+      [startColumn]: { ...kanbanData[startColumn], cards: newStartColumnCards },
+      [endColumn]: { ...kanbanData[endColumn], cards: newEndColumnCards },
     });
 
     console.log("Function moveCard Appelée");
   };
 
-  const updateCard = (cardIndex, column, newTitle) =>{
-    const currentCard = kanbanData[column][cardIndex]
+  const updateCard = (cardIndex, column, newTitle) => {
+    const currentCard = kanbanData[column].cards[cardIndex];
 
     const updatedCard = {
       task: newTitle,
-      description: currentCard.description
-    }
+      description: currentCard.description,
+    };
 
-    const newKanbanData = {...kanbanData}
-    newKanbanData[column][cardIndex] = updatedCard;
+    const newKanbanData = { ...kanbanData };
+    newKanbanData[column].cards[cardIndex] = updatedCard;
 
-    setKanbanData(newKanbanData)
-  }
+    setKanbanData(newKanbanData);
 
-  
+    console.log("Function updateCard Appelée");
+  };
+
+  const addCard = (columnName, newTask, newDescription) => {
+    // Que faire ?
+    // 1. Créer la nouvelle carte
+    const newCard = {
+      task: newTask,
+      description: newDescription,
+    };
+    // 2. L'ajouter à la bonne colonne
+    const newKanbanData = { ...kanbanData };
+    newKanbanData[columnName] = [...kanbanData[columnName].cards, newCard];
+    // 3. Mettre à jour l'état
+    setKanbanData(newKanbanData);
+
+    console.log("Function addCard Appelée");
+  };
+
   return (
     <>
-      <div className="min-h-screen max-h-screen bg-gray-100 p-4">
+      <div className="h-screen bg-gray-100 p-4 flex flex-col">
         <h1 className="text-2xl font-bold text-center mb-4">Tableau Kanban</h1>
-        <div className="flex gap-4 max-w-7xl mx-auto">
+        <div className="flex gap-4 flex-1 justify-start overflow-x-auto min-w-0">
           <Column
-            title="To Do"
-            cardsTab={kanbanData.todo}
+            title={kanbanData.todo.title}
+            cardsTab={kanbanData.todo.cards}
             columnName="todo" // ← Le nom technique de la colonne
             onMoveCard={moveCard}
-            onUpdateCard={updateCard} // ← La fonction qu'on a créée
+            onUpdateCard={updateCard}
+            onAddCard={addCard} // ← La fonction qu'on a créée
           />
           <Column
-            title="In Progress"
-            cardsTab={kanbanData.inProgress}
+            title={kanbanData.inProgress.title}
+            cardsTab={kanbanData.inProgress.cards}
             columnName="inProgress" // ← Le nom technique
             onMoveCard={moveCard}
-            onUpdateCard={updateCard} // ← La même fonction
+            onUpdateCard={updateCard}
+            onAddCard={addCard} // ← La même fonction
           />
           <Column
-            title="Done"
-            cardsTab={kanbanData.done}
+            title={kanbanData.done.title}
+            cardsTab={kanbanData.done.cards}
             columnName="done" // ← Le nom technique
             onMoveCard={moveCard}
-            onUpdateCard={updateCard} // ← La même fonction
+            onUpdateCard={updateCard}
+            onAddCard={addCard} // ← La même fonction
           />
         </div>
       </div>

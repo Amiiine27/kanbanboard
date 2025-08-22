@@ -29,6 +29,7 @@ export default function Card({
         <div className="bg-white rounded-lg p-4 shadow-md mb-4">
           {isEditingTitle ? (
             <input
+            className="border-2 rounded-md text-lg font-bold mb-2"
               type="text"
               value={tempTitle}
               onChange={(e) => setTempTitle(e.target.value)}
