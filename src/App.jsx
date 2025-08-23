@@ -1,4 +1,5 @@
 import "./App.css";
+import AddColumnButton from "./components/AddColumnButton";
 import Column from "./components/Column";
 import { useState, useEffect } from "react";
 
@@ -91,35 +92,41 @@ function App() {
     console.log("Function addCard Appelée");
   };
 
+  const addColumn = (newTitle) => {
+    const nextId = Object.keys(kanbanData).length; // = 3
+    const newColumnKey = `column_${nextId}`;
+
+    const newColumn = {
+      [newColumnKey]: {
+        title: newTitle,
+        cards: [],
+      },
+    };
+
+    const newKanbanData = {...kanbanData, ...newColumn};
+    setKanbanData(newKanbanData);
+  };
+
   return (
     <>
       <div className="h-screen bg-gray-100 p-4 flex flex-col">
         <h1 className="text-2xl font-bold text-center mb-4">Tableau Kanban</h1>
         <div className="flex gap-4 flex-1 justify-start overflow-x-auto min-w-0">
-          <Column
-            title={kanbanData.todo.title}
-            cardsTab={kanbanData.todo.cards}
-            columnName="todo" // ← Le nom technique de la colonne
-            onMoveCard={moveCard}
-            onUpdateCard={updateCard}
-            onAddCard={addCard} // ← La fonction qu'on a créée
-          />
-          <Column
-            title={kanbanData.inProgress.title}
-            cardsTab={kanbanData.inProgress.cards}
-            columnName="inProgress" // ← Le nom technique
-            onMoveCard={moveCard}
-            onUpdateCard={updateCard}
-            onAddCard={addCard} // ← La même fonction
-          />
-          <Column
-            title={kanbanData.done.title}
-            cardsTab={kanbanData.done.cards}
-            columnName="done" // ← Le nom technique
-            onMoveCard={moveCard}
-            onUpdateCard={updateCard}
-            onAddCard={addCard} // ← La même fonction
-          />
+          {Object.keys(kanbanData).map((columnName) => (
+            // Qu'est-ce que tu mets ici ?
+            // Comment tu crées un <Column> avec les bonnes props ?
+
+            <Column
+              title={kanbanData[columnName].title}
+              cardsTab={kanbanData[columnName].cards}
+              columnName={columnName}
+              onMoveCard={moveCard}
+              onAddCard={addCard}
+              onUpdateCard={updateCard}
+            />
+          ))}
+
+          <AddColumnButton onAddColumn={addColumn}/>
         </div>
       </div>
     </>
