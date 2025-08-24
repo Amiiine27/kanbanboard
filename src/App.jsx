@@ -85,12 +85,29 @@ function App() {
     };
     // 2. L'ajouter à la bonne colonne
     const newKanbanData = { ...kanbanData };
-    newKanbanData[columnName] = [...kanbanData[columnName].cards, newCard];
+    newKanbanData[columnName] = {
+      ...kanbanData[columnName],
+      cards: [...kanbanData[columnName].cards, newCard],
+    };
     // 3. Mettre à jour l'état
     setKanbanData(newKanbanData);
 
     console.log("Function addCard Appelée");
   };
+
+  const deleteCard = (columnName, cardIndex) => {
+    const newColumnWithoutCard = kanbanData[columnName].cards.filter(
+      (card, index) => index !== cardIndex
+    )
+
+    const newKanbanData ={...kanbanData}
+    newKanbanData[columnName] = {
+      ...kanbanData[columnName],
+      cards: newColumnWithoutCard
+    }
+
+    setKanbanData(newKanbanData)
+  }
 
   const addColumn = (newTitle) => {
     const nextId = Object.keys(kanbanData).length; // = 3
@@ -103,7 +120,17 @@ function App() {
       },
     };
 
-    const newKanbanData = {...kanbanData, ...newColumn};
+    const newKanbanData = { ...kanbanData, ...newColumn };
+    setKanbanData(newKanbanData);
+  };
+
+  const updateColumn = (columnName, newTitle) => {
+    // ← columnName, pas columnIndex
+    const newKanbanData = { ...kanbanData };
+    newKanbanData[columnName] = {
+      ...kanbanData[columnName], // ← Garde les cartes
+      title: newTitle, // ← Met à jour juste le titre
+    };
     setKanbanData(newKanbanData);
   };
 
@@ -123,10 +150,12 @@ function App() {
               onMoveCard={moveCard}
               onAddCard={addCard}
               onUpdateCard={updateCard}
+              onUpdateColumn={updateColumn}
+              onDeleteCard={deleteCard}
             />
           ))}
 
-          <AddColumnButton onAddColumn={addColumn}/>
+          <AddColumnButton onAddColumn={addColumn} />
         </div>
       </div>
     </>

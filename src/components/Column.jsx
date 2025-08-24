@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Card from "./Card";
 
 export default function Column({
@@ -8,9 +8,14 @@ export default function Column({
   onMoveCard,
   onUpdateCard,
   onAddCard,
+  onUpdateColumn,
+  onDeleteCard
 }) {
   const [isAdding, setIsAdding] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState("");
+
+  const [isEditingColumnTitle, setIsEditingColumnTitle] = useState(false);
+  const [newColumnTitle, setNewColumnTitle] = useState(title);
 
   const handleAddCard = () => {
     onAddCard(columnName, newTaskTitle, "");
@@ -18,10 +23,19 @@ export default function Column({
     setNewTaskTitle("");
   };
 
-  const handleCancel = () => {
+  const handleTaskCancel = () => {
     setIsAdding(false);
     setNewTaskTitle("");
   };
+
+  const handleColumnCancel = () => {
+    setIsEditingColumnTitle(false);
+    setNewColumnTitle(title);
+  };
+
+  useEffect(() => {
+    setNewColumnTitle(title);
+  }, [title]);
 
   return (
     <div
@@ -38,10 +52,38 @@ export default function Column({
           onMoveCard(cardIndex, sourceColumn, columnName);
         }
       }}
+
+      draggable
     >
-      <h1 className="text-xl font-bold p-4 border-b border-gray-200 text-center">
-        {title}
-      </h1>
+      {isEditingColumnTitle ? (
+        <input
+          className="w-96 flex-shrink-0 bg-white rounded-lg shadow-md text-xl font-bold p-4 text-center self-start border-2"
+          type="text"
+          onChange={(e) => setNewColumnTitle(e.target.value)}
+          value={newColumnTitle}
+          autoFocus
+          onBlur={() => {
+            handleColumnCancel()
+          }}
+          onKeyDown={(e) => {
+            if (e.key == "Enter") {
+              setIsEditingColumnTitle(false)
+              onUpdateColumn(columnName, newColumnTitle)
+            } else if (e.key == "Escape") {
+              handleColumnCancel()
+            }
+          }}
+        />
+      ) : (
+        <h1
+          className="text-xl font-bold p-4 border-b border-gray-200 text-center"
+          onDoubleClick={() => {
+            setIsEditingColumnTitle(true);
+          }}
+        >
+          {title}
+        </h1>
+      )}
 
       <div className="flex-1 gap-5">
         {cardsTab.map((card, index) => (
@@ -53,6 +95,7 @@ export default function Column({
             currentColumn={columnName}
             onMoveCard={onMoveCard}
             onUpdateCard={onUpdateCard}
+            onDeleteCard={onDeleteCard}
           />
         ))}
       </div>
@@ -70,7 +113,7 @@ export default function Column({
             autoFocus
             onBlur={() => {
               if (newTaskTitle === "") {
-                handleCancel();
+                handleTaskCancel();
               } else {
                 handleAddCard();
               }
@@ -78,13 +121,13 @@ export default function Column({
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 if (newTaskTitle === "") {
-                  handleCancel();
+                  handleTaskCancel();
                 } else {
                   handleAddCard();
                 }
               }
               if (e.key === "Escape") {
-                handleCancel();
+                handleTaskCancel();
               }
             }}
           />
