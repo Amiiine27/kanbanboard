@@ -9,7 +9,10 @@ export default function Column({
   onUpdateCard,
   onAddCard,
   onUpdateColumn,
-  onDeleteCard
+  onDeleteCard,
+  onDeleteColumn,
+  onOpenContextMenu,
+  onCloseContextMenu
 }) {
   const [isAdding, setIsAdding] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState("");
@@ -52,7 +55,6 @@ export default function Column({
           onMoveCard(cardIndex, sourceColumn, columnName);
         }
       }}
-
       draggable
     >
       {isEditingColumnTitle ? (
@@ -63,14 +65,14 @@ export default function Column({
           value={newColumnTitle}
           autoFocus
           onBlur={() => {
-            handleColumnCancel()
+            handleColumnCancel();
           }}
           onKeyDown={(e) => {
             if (e.key == "Enter") {
-              setIsEditingColumnTitle(false)
-              onUpdateColumn(columnName, newColumnTitle)
+              setIsEditingColumnTitle(false);
+              onUpdateColumn(columnName, newColumnTitle);
             } else if (e.key == "Escape") {
-              handleColumnCancel()
+              handleColumnCancel();
             }
           }}
         />
@@ -79,6 +81,10 @@ export default function Column({
           className="text-xl font-bold p-4 border-b border-gray-200 text-center"
           onDoubleClick={() => {
             setIsEditingColumnTitle(true);
+          }}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            onOpenContextMenu(e.clientX, e.clientY, 'column', columnName)
           }}
         >
           {title}
@@ -96,6 +102,8 @@ export default function Column({
             onMoveCard={onMoveCard}
             onUpdateCard={onUpdateCard}
             onDeleteCard={onDeleteCard}
+            onOpenContextMenu={onOpenContextMenu} // ← AJOUTER
+            onCloseContextMenu={onCloseContextMenu} // ← AJOUTER
           />
         ))}
       </div>

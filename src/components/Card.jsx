@@ -8,31 +8,17 @@ export default function Card({
   onMoveCard,
   onUpdateCard,
   onDeleteCard,
+  onOpenContextMenu,
+  onCloseContextMenu
 }) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [tempTitle, setTempTitle] = useState(task);
-
-  const [showContextMenu, setShowContextMenu] = useState(false);
-  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
 
   // Synchroniser tempTitle avec les nouvelles props
   useEffect(() => {
     setTempTitle(task);
   }, [task]); // Se déclenche quand task change
 
-  useEffect(() => {
-    const handleClickOutside = () => {
-      setShowContextMenu(false);
-    };
-    
-    if (showContextMenu) {
-      document.addEventListener('click', handleClickOutside);
-    }
-    
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, [showContextMenu]);
 
   return (
     <div
@@ -44,8 +30,7 @@ export default function Card({
       }}
       onContextMenu={(e) => {
         e.preventDefault();
-        setMenuPosition({ x: e.clientX, y: e.clientY }); // Position de la souris
-        setShowContextMenu(true);
+        onOpenContextMenu(e.clientX, e.clientY, 'card', currentColumn, cardIndex)
       }}
     >
       <div className="">
@@ -83,23 +68,7 @@ export default function Card({
           >
             {description}
           </p>
-          {showContextMenu && (
-            <div
-              className="fixed bg-white border shadow-lg z-50"
-              onContextMenu={(e) => e.stopPropagation()}
-              style={{ left: menuPosition.x, top: menuPosition.y }}
-            >
-              <p
-                className="text-red-500 p-2 hover:bg-gray-100 cursor-pointer"
-                onClick={() => {
-                  onDeleteCard(currentColumn, cardIndex);
-                  setShowContextMenu(false);
-                }}
-              >
-                Supprimer la carte
-              </p>
-            </div>
-          )}
+          
         </div>
       </div>
     </div>
